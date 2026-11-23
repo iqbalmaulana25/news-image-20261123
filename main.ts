@@ -13,6 +13,7 @@
 // Run locally with:  mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
 import { copyFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -37,4 +38,9 @@ if (!isPng && !isJpeg) {
 // name a folder that does not exist yet; create it either way so the copy
 // below cannot fail on a missing directory.
 mkdirSync(outputDir, { recursive: true });
-copyFileSync(join(repoDir, 'entry.png'), join(outputDir, 'entry.png'));
+copyFileSync(sourcePath, join(outputDir, 'entry.png'));
+
+// The grader runs this program twice and both runs must write the same
+// bytes; log the copied file's fingerprint so the run record shows it.
+const fingerprint = createHash('sha256').update(bytes).digest('hex');
+console.log(`entry.png: ${bytes.length} bytes, sha256 ${fingerprint}`);
