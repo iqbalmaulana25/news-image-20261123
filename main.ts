@@ -8,11 +8,15 @@
 //
 // Run locally with:  mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
-import { copyFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoDir = dirname(fileURLToPath(import.meta.url));
 const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
+// The grader mounts a writable /output, but a local MAKEFUN_OUTPUT_DIR may
+// name a folder that does not exist yet; create it either way so the copy
+// below cannot fail on a missing directory.
+mkdirSync(outputDir, { recursive: true });
 copyFileSync(join(repoDir, 'entry.png'), join(outputDir, 'entry.png'));
